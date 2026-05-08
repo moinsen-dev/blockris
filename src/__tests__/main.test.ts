@@ -49,39 +49,52 @@ describe("bootstrap — main entry", () => {
 		teardown();
 	});
 
-	it("responds to ArrowRight keydown by shifting the piece", () => {
+	it("responds to ArrowDown keydown by soft-dropping the piece by one row", () => {
 		const { host, teardown } = mountApp();
-		const before = Array.from(
+		const beforeRow = Math.min(
+			...Array.from(
+				host.querySelectorAll<HTMLElement>(".piece-overlay"),
+			).map((el) => Number(el.getAttribute("data-row"))),
+		);
+		window.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowDown" }));
+		const afterRow = Math.min(
+			...Array.from(
+				host.querySelectorAll<HTMLElement>(".piece-overlay"),
+			).map((el) => Number(el.getAttribute("data-row"))),
+		);
+		expect(afterRow).toBe(beforeRow + 1);
+		teardown();
+	});
+
+	it("ArrowLeft / ArrowRight keydown alone does NOT move (DAS-driven only)", () => {
+		// Single keydown for left/right is consumed only by heldKeys —
+		// the actual move happens in the RAF loop's tickDas → first-frame
+		// shouldFire path. This avoids the double-dispatch bug where the
+		// piece skipped two cells per press.
+		const { host, teardown } = mountApp();
+		const beforeCols = Array.from(
 			host.querySelectorAll<HTMLElement>(".piece-overlay"),
 		).map((el) => el.getAttribute("data-col"));
-		const event = new KeyboardEvent("keydown", { code: "ArrowRight" });
-		window.dispatchEvent(event);
-		const after = Array.from(
+		window.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowRight" }));
+		const afterCols = Array.from(
 			host.querySelectorAll<HTMLElement>(".piece-overlay"),
 		).map((el) => el.getAttribute("data-col"));
-		// Each col should have shifted by +1 (assuming legal move at spawn)
-		for (let i = 0; i < before.length; i++) {
-			const b = before[i];
-			const a = after[i];
-			if (b !== null && a !== null) {
-				expect(Number(a)).toBe(Number(b) + 1);
-			}
-		}
+		expect(afterCols).toEqual(beforeCols);
 		teardown();
 	});
 
 	it("teardown removes keyboard listeners (further keys do nothing visible)", () => {
 		const { host, teardown } = mountApp();
 		teardown();
-		// After teardown, keys should not move the piece. We snapshot
-		// pre-key, fire ArrowRight, and assert nothing changed.
+		// ArrowDown soft-drops on a live game; after teardown it should be
+		// a no-op (listener removed). Snapshot row, fire, expect unchanged.
 		const before = Array.from(
 			host.querySelectorAll<HTMLElement>(".piece-overlay"),
-		).map((el) => el.getAttribute("data-col"));
-		window.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowRight" }));
+		).map((el) => el.getAttribute("data-row"));
+		window.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowDown" }));
 		const after = Array.from(
 			host.querySelectorAll<HTMLElement>(".piece-overlay"),
-		).map((el) => el.getAttribute("data-col"));
+		).map((el) => el.getAttribute("data-row"));
 		expect(after).toEqual(before);
 	});
 

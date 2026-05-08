@@ -173,6 +173,14 @@ function setupKeyboard(w: Wiring): () => void {
 	const onKeyDown = (event: KeyboardEvent) => {
 		if (event.repeat) return;
 		w.heldKeys.set(event.code, true);
+		// Left/right are owned exclusively by the DAS pipeline so the
+		// initial press doesn't double-fire (once here + once in the next
+		// RAF frame's tickDas initial-fire). DAS fires shouldFire=true on
+		// the first frame after press anyway, so latency is one frame.
+		if (event.code === "ArrowLeft" || event.code === "ArrowRight") {
+			event.preventDefault();
+			return;
+		}
 		const intent = handleKey(event, w.state);
 		if (intent) {
 			event.preventDefault();
