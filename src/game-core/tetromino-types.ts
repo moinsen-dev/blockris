@@ -36,7 +36,7 @@ export const ROTATIONS: ReadonlyArray<Rotation> = [0, 1, 2, 3] as const;
  * A cell offset from the piece origin. The origin convention is the
  * top-left corner of the piece's bounding box; offsets are
  * `[col, row]` with `row` increasing downward (screen-space, NOT
- * Tetris-stack-space).
+ * block-stack).
  */
 export type CellOffset = readonly [col: number, row: number];
 
@@ -253,14 +253,17 @@ const L_SHAPES: RotationStates = [
 	],
 ];
 
+// Blockris palette — pastel-shifted, distinct from the standard
+// Tetris-guideline saturated primaries. Each piece keeps its
+// canonical letter mapping, but the visual identity is its own.
 export const TETROMINOES: { readonly [K in TetrominoType]: TetrominoSpec } = {
-	I: { type: "I", shapes: I_SHAPES, color: "#00f0f0", spawnCol: 3, kickGroup: "I" },
-	O: { type: "O", shapes: O_SHAPES, color: "#f0f000", spawnCol: 3, kickGroup: "O" },
-	T: { type: "T", shapes: T_SHAPES, color: "#a000f0", spawnCol: 3, kickGroup: "JLSTZ" },
-	S: { type: "S", shapes: S_SHAPES, color: "#00f000", spawnCol: 3, kickGroup: "JLSTZ" },
-	Z: { type: "Z", shapes: Z_SHAPES, color: "#f00000", spawnCol: 3, kickGroup: "JLSTZ" },
-	J: { type: "J", shapes: J_SHAPES, color: "#0000f0", spawnCol: 3, kickGroup: "JLSTZ" },
-	L: { type: "L", shapes: L_SHAPES, color: "#f0a000", spawnCol: 3, kickGroup: "JLSTZ" },
+	I: { type: "I", shapes: I_SHAPES, color: "#67e8f9", spawnCol: 3, kickGroup: "I" },
+	O: { type: "O", shapes: O_SHAPES, color: "#fcd34d", spawnCol: 3, kickGroup: "O" },
+	T: { type: "T", shapes: T_SHAPES, color: "#c084fc", spawnCol: 3, kickGroup: "JLSTZ" },
+	S: { type: "S", shapes: S_SHAPES, color: "#86efac", spawnCol: 3, kickGroup: "JLSTZ" },
+	Z: { type: "Z", shapes: Z_SHAPES, color: "#fda4af", spawnCol: 3, kickGroup: "JLSTZ" },
+	J: { type: "J", shapes: J_SHAPES, color: "#93c5fd", spawnCol: 3, kickGroup: "JLSTZ" },
+	L: { type: "L", shapes: L_SHAPES, color: "#fdba74", spawnCol: 3, kickGroup: "JLSTZ" },
 };
 
 // ---------------------------------------------------------------------------

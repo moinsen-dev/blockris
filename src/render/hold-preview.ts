@@ -32,7 +32,7 @@ function buildSlot(doc: Document): HTMLElement {
 export function createHoldPreview(parent: HTMLElement): HoldPreview {
 	const doc = parent.ownerDocument;
 	const root = doc.createElement("div");
-	root.classList.add("tetris-side");
+	root.classList.add("blockris-side");
 	root.setAttribute("data-slot", "hold");
 	const heading = doc.createElement("h3");
 	heading.textContent = "Hold";

@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Fancy Tetris</title>
+		<title>Blockris</title>
 		<style>
 			:root {
 				--bg: #0b1020;
@@ -44,7 +44,7 @@
 				padding: 2rem;
 			}
 
-			.tetris-shell {
+			.blockris-shell {
 				display: grid;
 				grid-template-columns: auto auto auto;
 				grid-template-areas: "hold board queue";
@@ -59,7 +59,7 @@
 					0 30px 60px -15px rgba(0, 0, 0, 0.5);
 			}
 
-			.tetris-hud {
+			.blockris-hud {
 				grid-area: hud;
 				display: grid;
 				grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -69,7 +69,7 @@
 				font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 			}
 
-			.tetris-hud-stat {
+			.blockris-hud-stat {
 				display: flex;
 				flex-direction: column;
 				gap: 0.125rem;
@@ -78,13 +78,13 @@
 				background: rgba(30, 41, 59, 0.6);
 				border: 1px solid rgba(148, 163, 184, 0.08);
 			}
-			.tetris-hud-stat-label {
+			.blockris-hud-stat-label {
 				font-size: 0.625rem;
 				opacity: 0.6;
 				text-transform: uppercase;
 				letter-spacing: 0.08em;
 			}
-			.tetris-hud-stat-value {
+			.blockris-hud-stat-value {
 				font-size: 1.125rem;
 				font-weight: 600;
 				color: var(--fg);
@@ -127,9 +127,9 @@
 			}
 
 			[data-clearing="true"] {
-				animation: tetris-sweep 250ms ease-out forwards;
+				animation: blockris-sweep 250ms ease-out forwards;
 			}
-			@keyframes tetris-sweep {
+			@keyframes blockris-sweep {
 				0% {
 					background: #fff;
 					transform: scaleY(1);
@@ -147,9 +147,9 @@
 			}
 
 			[data-lock-flash="true"] {
-				animation: tetris-lock 200ms ease-out;
+				animation: blockris-lock 200ms ease-out;
 			}
-			@keyframes tetris-lock {
+			@keyframes blockris-lock {
 				0% {
 					filter: brightness(2.5);
 					background: #fff;
@@ -159,20 +159,20 @@
 				}
 			}
 
-			.tetris-side {
+			.blockris-side {
 				display: flex;
 				flex-direction: column;
 				gap: 1rem;
 				font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 				color: var(--fg-dim);
 			}
-			.tetris-side[data-slot="hold"] {
+			.blockris-side[data-slot="hold"] {
 				grid-area: hold;
 			}
-			.tetris-side[data-slot="queue"] {
+			.blockris-side[data-slot="queue"] {
 				grid-area: queue;
 			}
-			.tetris-side h3 {
+			.blockris-side h3 {
 				margin: 0 0 0.25rem;
 				font-size: 0.625rem;
 				text-transform: uppercase;
@@ -181,7 +181,7 @@
 				opacity: 0.7;
 			}
 
-			.tetris-mini {
+			.blockris-mini {
 				display: grid;
 				grid-template-columns: repeat(4, var(--mini-cell-px));
 				grid-template-rows: repeat(4, var(--mini-cell-px));
@@ -190,22 +190,22 @@
 				background: var(--frame);
 				border-radius: 4px;
 			}
-			.tetris-mini > div {
+			.blockris-mini > div {
 				background: var(--bg-cell-empty);
 				border-radius: 1px;
 			}
-			.tetris-mini > div[data-mini-filled="true"] {
+			.blockris-mini > div[data-mini-filled="true"] {
 				background: var(--mini-color, var(--fg-dim));
 				box-shadow: inset 1px 1px 0 0 rgba(255, 255, 255, 0.3);
 			}
 
-			.tetris-status-running {
+			.blockris-status-running {
 				color: var(--accent);
 			}
-			.tetris-status-paused {
+			.blockris-status-paused {
 				color: #fbbf24;
 			}
-			.tetris-status-game-over {
+			.blockris-status-game-over {
 				color: #f87171;
 			}
 		</style>

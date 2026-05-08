@@ -1,5 +1,5 @@
 /**
- * fancy-tetris main entry. Composes the modules built across the
+ * blockris main entry. Composes the modules built across the
  * project-office plan into a single playable game loop.
  *
  *   keyboard → handleKey → Intent
@@ -50,12 +50,12 @@ interface Hud {
 
 function makeStat(parent: HTMLElement, label: string): HTMLElement {
 	const wrap = document.createElement("div");
-	wrap.classList.add("tetris-hud-stat");
+	wrap.classList.add("blockris-hud-stat");
 	const k = document.createElement("span");
-	k.classList.add("tetris-hud-stat-label");
+	k.classList.add("blockris-hud-stat-label");
 	k.textContent = label;
 	const v = document.createElement("span");
-	v.classList.add("tetris-hud-stat-value");
+	v.classList.add("blockris-hud-stat-value");
 	wrap.appendChild(k);
 	wrap.appendChild(v);
 	parent.appendChild(wrap);
@@ -64,7 +64,7 @@ function makeStat(parent: HTMLElement, label: string): HTMLElement {
 
 function buildHud(parent: HTMLElement): Hud {
 	const root = document.createElement("div");
-	root.classList.add("tetris-hud");
+	root.classList.add("blockris-hud");
 	const score = makeStat(root, "Score");
 	const level = makeStat(root, "Level");
 	const lines = makeStat(root, "Lines");
@@ -84,11 +84,11 @@ function paintHud(hud: Hud, state: GameState): void {
 	};
 	hud.status.textContent = labels[state.status];
 	hud.status.classList.remove(
-		"tetris-status-running",
-		"tetris-status-paused",
-		"tetris-status-game-over",
+		"blockris-status-running",
+		"blockris-status-paused",
+		"blockris-status-game-over",
 	);
-	hud.status.classList.add(`tetris-status-${state.status}`);
+	hud.status.classList.add(`blockris-status-${state.status}`);
 }
 
 function activePieceCellCoords(
@@ -232,7 +232,7 @@ function startGameLoop(w: Wiring): () => void {
 function buildShell(parent: HTMLElement): HTMLElement {
 	parent.textContent = "";
 	const shell = document.createElement("div");
-	shell.classList.add("tetris-shell");
+	shell.classList.add("blockris-shell");
 	parent.appendChild(shell);
 	return shell;
 }

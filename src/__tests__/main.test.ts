@@ -134,7 +134,7 @@ describe("bootstrap — main entry", () => {
 		const { host, teardown } = mountApp();
 		const queueRoot = host.querySelector('[data-slot="queue"]');
 		expect(queueRoot).not.toBeNull();
-		const slots = queueRoot?.querySelectorAll(".tetris-mini") ?? [];
+		const slots = queueRoot?.querySelectorAll(".blockris-mini") ?? [];
 		expect(slots.length).toBe(5);
 		// Each filled slot should have 4 mini-filled cells.
 		for (const slot of Array.from(slots)) {
@@ -150,7 +150,7 @@ describe("bootstrap — main entry", () => {
 		const { host, teardown } = mountApp();
 		const holdRoot = host.querySelector('[data-slot="hold"]');
 		expect(holdRoot).not.toBeNull();
-		const slot = holdRoot?.querySelector(".tetris-mini");
+		const slot = holdRoot?.querySelector(".blockris-mini");
 		expect(slot).not.toBeNull();
 		const filled = slot?.querySelectorAll('[data-mini-filled="true"]') ?? [];
 		expect(filled.length).toBe(0);
@@ -173,7 +173,7 @@ describe("bootstrap — main entry", () => {
 			null;
 		window.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyC" }));
 		const holdSlot = host.querySelector(
-			'[data-slot="hold"] .tetris-mini',
+			'[data-slot="hold"] .blockris-mini',
 		) as HTMLElement | null;
 		const filled = holdSlot?.querySelectorAll(
 			'[data-mini-filled="true"]',
@@ -186,10 +186,10 @@ describe("bootstrap — main entry", () => {
 		teardown();
 	});
 
-	it("status pill toggles class to tetris-status-paused on pause", () => {
+	it("status pill toggles class to blockris-status-paused on pause", () => {
 		const { host, teardown } = mountApp();
 		window.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyP" }));
-		const paused = host.querySelector(".tetris-status-paused");
+		const paused = host.querySelector(".blockris-status-paused");
 		expect(paused).not.toBeNull();
 		teardown();
 	});

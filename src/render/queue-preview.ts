@@ -10,7 +10,7 @@ import {
 	type TetrominoType,
 } from "../game-core/tetromino-types.ts";
 
-export const MINI_CELL_CLASS = "tetris-mini";
+export const MINI_CELL_CLASS = "blockris-mini";
 export const MINI_FILLED_ATTR = "data-mini-filled";
 export const MINI_COLOR_VAR = "--mini-color";
 
@@ -35,7 +35,7 @@ export function createQueuePreview(
 ): QueuePreview {
 	const doc = parent.ownerDocument;
 	const root = doc.createElement("div");
-	root.classList.add("tetris-side");
+	root.classList.add("blockris-side");
 	root.setAttribute("data-slot", "queue");
 	const heading = doc.createElement("h3");
 	heading.textContent = "Next";
