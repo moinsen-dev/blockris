@@ -1,0 +1,1147 @@
+{
+	"version": "1.0",
+	"schema_version": "project-office/v1",
+	"project_id": "fancy-tetris",
+	"goal": {
+		"id": "goal-root",
+		"title": "Fancy Tetris in TypeScript with motion.dev",
+		"status": "draft"
+	},
+	"generated_at": "2026-05-08T06:53:58.745Z",
+	"stats": {
+		"node_count": 38,
+		"edge_count": 122,
+		"agent_count": 3,
+		"decision_count": 2,
+		"by_type": {
+			"subproject": 5,
+			"constraint": 1,
+			"task": 26,
+			"risk": 1,
+			"open-question": 2,
+			"decision": 2,
+			"goal": 1
+		},
+		"by_status": {
+			"draft": 6,
+			"ready": 2,
+			"done": 28,
+			"archived": 2
+		},
+		"readiness": {
+			"passed": 0,
+			"failed": 0,
+			"rate": 0
+		}
+	},
+	"topics": [],
+	"agents": [
+		{
+			"id": "test-lead-agent",
+			"role": "test-lead",
+			"active": true,
+			"owned_count": 2
+		},
+		{
+			"id": "office-orchestrator",
+			"role": "office-orchestrator",
+			"active": true,
+			"owned_count": 0
+		},
+		{
+			"id": "architect-agent",
+			"role": "architect",
+			"active": true,
+			"owned_count": 27
+		}
+	],
+	"nodes": [
+		{
+			"id": "progression-and-state",
+			"type": "subproject",
+			"title": "Progression + Game State",
+			"summary": "Level system, gravity speed-up curve, score (singles/doubles/triples/tetris/T-spin), pause / restart / game-over screens.",
+			"status": "draft",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "gpu-only-animations",
+			"type": "constraint",
+			"title": "motion.dev tweens use GPU-composited properties only",
+			"summary": "All motion.dev animations are restricted to transform and opacity. Layout-triggering properties (top/left/width/height/margin) are forbidden.",
+			"status": "ready",
+			"owner": null,
+			"readiness": "unknown"
+		},
+		{
+			"id": "frame-budget-profiler",
+			"type": "task",
+			"title": "Frame-budget profiling harness",
+			"summary": "Per-frame performance.now() logger captures rule-step ms + render ms across a 60s gameplay session; outputs a console/CSV summary.",
+			"status": "done",
+			"owner": "test-lead-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "tetromino-types",
+			"type": "task",
+			"title": "Tetromino types + SRS rotation tables",
+			"summary": "TS types for the 7 tetrominoes (I, O, T, S, Z, J, L) with all 4 rotation states + SRS kick tables.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "game-over-detect",
+			"type": "task",
+			"title": "Game-over (spawn collision)",
+			"summary": "When canPlacePiece returns false at spawn, the game flips to game-over. State sticks until restart.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "gravity",
+			"type": "task",
+			"title": "Gravity tick + drop logic",
+			"summary": "Soft-drop (1 cell per tick), hard-drop (instant), gravity-curve per level.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "render-and-motion",
+			"type": "subproject",
+			"title": "Render + Motion (the 'fancy' part)",
+			"summary": "DOM-based rendering driven by motion.dev — drop animations, lock-flash, line-clear sweep, rotation easing, hold-piece preview.",
+			"status": "draft",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "risk-motion-vs-fps",
+			"type": "risk",
+			"title": "motion.dev animation budget might fight 60fps gameplay",
+			"summary": "Tetris needs deterministic 60fps rule-step + render. Heavy motion.dev animations can drop frames if mismanaged.",
+			"status": "draft",
+			"owner": "risk-officer-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "smoke-task-055",
+			"type": "task",
+			"title": "v0.5.5 smoke-test task",
+			"status": "archived",
+			"owner": null,
+			"readiness": "unknown"
+		},
+		{
+			"id": "pause-and-restart",
+			"type": "task",
+			"title": "Pause / Resume / Restart",
+			"summary": "togglePause flips paused↔running. restart resets the board+bag+score; only when paused or game-over.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "motion-hard-drop-flash",
+			"type": "task",
+			"title": "Hard-drop lock-flash via motion.dev",
+			"summary": "On hard-drop, the 4 cells that lock-down play a brief white flash (200ms ease-out) before settling into their fill color. Confirms the player's commit visually.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "keyboard-handler",
+			"type": "task",
+			"title": "Keyboard input handler",
+			"summary": "Binds standard Tetris keys → typed Intents. Arrows / Space (hard-drop) / X-Z (rotate) / C (hold) / P (pause).",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "cell-rendering",
+			"type": "task",
+			"title": "Cell renderer (board state → DOM)",
+			"summary": "Given a Board (from game-core/board.ts) and a Playfield, paint each cell with the right color from TETROMINOES[type].color or transparent for null.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "line-clear-blocks-or-concurrent",
+			"type": "open-question",
+			"title": "Should the line-clear animation block the rule-step?",
+			"summary": "Classic Tetris pauses gameplay during the line-clear flash. Decide whether the motion.dev sweep blocks the rule-step or runs concurrently with the next piece spawning.",
+			"status": "done",
+			"owner": null,
+			"readiness": "unknown"
+		},
+		{
+			"id": "game-state-machine",
+			"type": "task",
+			"title": "Game-state machine",
+			"summary": "Top-level state: board + active piece + bag + score + level + lines + running/paused/game-over. Reducer-style updates.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "line-clear-blocking-decision",
+			"type": "decision",
+			"title": "Line-clear sweep blocks the rule-step",
+			"summary": "Line-clear sweep blocks the rule-step",
+			"status": "done",
+			"owner": null,
+			"readiness": "unknown"
+		},
+		{
+			"id": "piece-renderer",
+			"type": "task",
+			"title": "Active-piece renderer (overlay)",
+			"summary": "Paints the currently-falling piece as a separate visual layer (no commit to board until lock-down). Uses TetrominoSpec to compute the 4 cells and paints them with the piece's color.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "smoke-red-055",
+			"type": "task",
+			"title": "v0.5.5 red-path task",
+			"status": "archived",
+			"owner": null,
+			"readiness": "unknown"
+		},
+		{
+			"id": "frame-overflow-fallback",
+			"type": "task",
+			"title": "Graceful animation drop when frame budget overruns",
+			"summary": "When per-frame budget overruns, cancel non-essential animations (lock-flash, hard-drop trail) before dropping rule-step frames.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "das-arr",
+			"type": "task",
+			"title": "DAS / ARR auto-repeat",
+			"summary": "Delayed Auto Shift + Auto Repeat Rate, guideline defaults DAS=170ms, ARR=50ms, configurable.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "board",
+			"type": "task",
+			"title": "Board state (10×20 playfield)",
+			"summary": "10-wide × 20-tall board representation with place/clear/isOccupied helpers. Pure functional.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "motion-drop-animation",
+			"type": "task",
+			"title": "Gravity-tick drop animation via motion.dev",
+			"summary": "When the active piece moves down by one row (gravity tick), the visual position interpolates with motion.dev (~120ms ease-out) instead of jumping. Uses CSS transform.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "main-entry",
+			"type": "task",
+			"title": "Main entry: wire game",
+			"summary": "src/main.ts: createPlayfield → newGame → keyboard listeners → requestAnimationFrame loop with gravity ticks.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "vite-setup",
+			"type": "task",
+			"title": "Vite dev-server + build",
+			"summary": "Add Vite + vite.config.ts. Entry: index.html → src/main.ts. bun run dev / bun run build.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "bag-randomizer",
+			"type": "task",
+			"title": "7-bag tetromino randomizer",
+			"summary": "Each bag of 7 contains exactly one of each tetromino type, shuffled deterministically given a seed.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "goal-root",
+			"type": "goal",
+			"title": "Fancy Tetris in TypeScript with motion.dev",
+			"status": "draft",
+			"owner": null,
+			"readiness": "unknown"
+		},
+		{
+			"id": "line-clear",
+			"type": "task",
+			"title": "Line-clear detection + collapse",
+			"summary": "Detect filled rows, clear them, drop remaining rows down. Returns count for scoring.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "motion-line-clear-sweep",
+			"type": "task",
+			"title": "Line-clear sweep animation via motion.dev",
+			"summary": "Before clearAndCollapse runs, the cleared rows play a horizontal sweep (left-to-right white flash) so the player sees what's clearing. Then collapse + render the new board.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "score-tracker",
+			"type": "task",
+			"title": "Score + level tracker",
+			"summary": "Wires line-clear into scoreForLines + levelFor. Updates state.score / state.level / state.linesCleared.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "input-controls",
+			"type": "subproject",
+			"title": "Input + Controls",
+			"summary": "Keyboard handling (arrows, X/Z rotation, space hard-drop, C hold, P pause); DAS/ARR tunable; reset on game-over.",
+			"status": "draft",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "game-core",
+			"type": "subproject",
+			"title": "Game Core (rules engine)",
+			"summary": "Pure-functional Tetris rules: board, tetromino set, SRS rotation, gravity, line-clear, scoring. No DOM, fully testable.",
+			"status": "ready",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "canvas-vs-dom-decision",
+			"type": "decision",
+			"title": "DOM + motion.dev (not Canvas-2D)",
+			"summary": "DOM + motion.dev (not Canvas-2D)",
+			"status": "done",
+			"owner": null,
+			"readiness": "unknown"
+		},
+		{
+			"id": "build-and-deploy",
+			"type": "subproject",
+			"title": "Build + Deploy",
+			"summary": "Vite + TS strict mode; deploy to a static host (GitHub Pages or moinsen.dev subdomain); CI build on push.",
+			"status": "draft",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "dom-playfield",
+			"type": "task",
+			"title": "DOM playfield (CSS grid 10×20)",
+			"summary": "Renders the 10×20 playfield as nested divs (one root, 200 cell children) sized via CSS grid. Pure structure, no piece-rendering yet.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "decouple-tick-from-tween",
+			"type": "task",
+			"title": "Decouple rule-tick from animation tween",
+			"summary": "Rule-step (gravity, rotate, lock, line-clear) runs on a deterministic logic tick independent of motion.dev's animation frame; animations are visual-only.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "q-canvas-vs-dom",
+			"type": "open-question",
+			"title": "Canvas-2D vs DOM-with-CSS-transforms for the playfield?",
+			"summary": "Canvas is Tetris-conventional (cheap pixel-perfect); DOM lets motion.dev choreograph each cell. Tradeoff: rendering cost vs animation ergonomics.",
+			"status": "done",
+			"owner": null,
+			"readiness": "unknown"
+		},
+		{
+			"id": "stress-test-60fps",
+			"type": "task",
+			"title": "Stress-test scenario: 60fps under worst-case load",
+			"summary": "Worst-case scenario: T-spin + 4-line clear + active piece falling + queue preview animating simultaneously. FPS must stay >= 55.",
+			"status": "done",
+			"owner": "test-lead-agent",
+			"readiness": "unknown"
+		},
+		{
+			"id": "scoring",
+			"type": "task",
+			"title": "Scoring + level system",
+			"summary": "Single (100) / Double (300) / Triple (500) / Tetris (800) per level, level-up every 10 lines.",
+			"status": "done",
+			"owner": "architect-agent",
+			"readiness": "unknown"
+		}
+	],
+	"edges": [
+		{
+			"from": "progression-and-state",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "progression-and-state",
+			"to": "game-state-machine",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "progression-and-state",
+			"to": "score-tracker",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "progression-and-state",
+			"to": "game-over-detect",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "gpu-only-animations",
+			"to": "risk-motion-vs-fps",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "frame-budget-profiler",
+			"to": "risk-motion-vs-fps",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "frame-budget-profiler",
+			"to": "risk-motion-vs-fps",
+			"type": "mitigates",
+			"confidence": 1
+		},
+		{
+			"from": "tetromino-types",
+			"to": "game-core",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "tetromino-types",
+			"to": "game-core",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "game-over-detect",
+			"to": "progression-and-state",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "game-over-detect",
+			"to": "game-state-machine",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "gravity",
+			"to": "game-core",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "gravity",
+			"to": "game-core",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "canvas-vs-dom-decision",
+			"type": "decided_by",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "dom-playfield",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "cell-rendering",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "piece-renderer",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "motion-drop-animation",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "motion-line-clear-sweep",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "motion-hard-drop-flash",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "render-and-motion",
+			"to": "risk-motion-vs-fps",
+			"type": "mitigated_by",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "frame-budget-profiler",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "gpu-only-animations",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "decouple-tick-from-tween",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "line-clear-blocks-or-concurrent",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "frame-overflow-fallback",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "stress-test-60fps",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "frame-budget-profiler",
+			"type": "mitigated_by",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "decouple-tick-from-tween",
+			"type": "mitigated_by",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "frame-overflow-fallback",
+			"type": "mitigated_by",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "stress-test-60fps",
+			"type": "mitigated_by",
+			"confidence": 1
+		},
+		{
+			"from": "risk-motion-vs-fps",
+			"to": "render-and-motion",
+			"type": "mitigates",
+			"confidence": 1
+		},
+		{
+			"from": "smoke-task-055",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "pause-and-restart",
+			"to": "input-controls",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "pause-and-restart",
+			"to": "game-state-machine",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "motion-hard-drop-flash",
+			"to": "render-and-motion",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "motion-hard-drop-flash",
+			"to": "piece-renderer",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "keyboard-handler",
+			"to": "main-entry",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "keyboard-handler",
+			"to": "das-arr",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "keyboard-handler",
+			"to": "input-controls",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "cell-rendering",
+			"to": "piece-renderer",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "cell-rendering",
+			"to": "motion-line-clear-sweep",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "cell-rendering",
+			"to": "render-and-motion",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "cell-rendering",
+			"to": "dom-playfield",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "cell-rendering",
+			"to": "render-and-motion",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "line-clear-blocks-or-concurrent",
+			"to": "risk-motion-vs-fps",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "line-clear-blocks-or-concurrent",
+			"to": "line-clear-blocking-decision",
+			"type": "decided_by",
+			"confidence": 1
+		},
+		{
+			"from": "line-clear-blocks-or-concurrent",
+			"to": "risk-motion-vs-fps",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "game-state-machine",
+			"to": "main-entry",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "game-state-machine",
+			"to": "score-tracker",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "game-state-machine",
+			"to": "game-over-detect",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "game-state-machine",
+			"to": "pause-and-restart",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "game-state-machine",
+			"to": "progression-and-state",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "line-clear-blocking-decision",
+			"to": "line-clear-blocks-or-concurrent",
+			"type": "decision_affects",
+			"confidence": 1
+		},
+		{
+			"from": "line-clear-blocking-decision",
+			"to": "motion-line-clear-sweep",
+			"type": "decision_affects",
+			"confidence": 1
+		},
+		{
+			"from": "piece-renderer",
+			"to": "motion-drop-animation",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "piece-renderer",
+			"to": "motion-hard-drop-flash",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "piece-renderer",
+			"to": "render-and-motion",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "piece-renderer",
+			"to": "cell-rendering",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "smoke-red-055",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "frame-overflow-fallback",
+			"to": "risk-motion-vs-fps",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "frame-overflow-fallback",
+			"to": "risk-motion-vs-fps",
+			"type": "mitigates",
+			"confidence": 1
+		},
+		{
+			"from": "das-arr",
+			"to": "input-controls",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "das-arr",
+			"to": "keyboard-handler",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "board",
+			"to": "game-core",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "board",
+			"to": "game-core",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "motion-drop-animation",
+			"to": "render-and-motion",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "motion-drop-animation",
+			"to": "piece-renderer",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "main-entry",
+			"to": "build-and-deploy",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "main-entry",
+			"to": "vite-setup",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "main-entry",
+			"to": "game-state-machine",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "main-entry",
+			"to": "keyboard-handler",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "vite-setup",
+			"to": "main-entry",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "vite-setup",
+			"to": "build-and-deploy",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "bag-randomizer",
+			"to": "game-core",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "bag-randomizer",
+			"to": "game-core",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "game-core",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "render-and-motion",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "input-controls",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "progression-and-state",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "build-and-deploy",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "risk-motion-vs-fps",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "q-canvas-vs-dom",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "smoke-task-055",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "goal-root",
+			"to": "smoke-red-055",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "line-clear",
+			"to": "game-core",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "line-clear",
+			"to": "game-core",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "motion-line-clear-sweep",
+			"to": "render-and-motion",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "motion-line-clear-sweep",
+			"to": "line-clear-blocking-decision",
+			"type": "decided_by",
+			"confidence": 1
+		},
+		{
+			"from": "motion-line-clear-sweep",
+			"to": "cell-rendering",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "score-tracker",
+			"to": "progression-and-state",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "score-tracker",
+			"to": "game-state-machine",
+			"type": "depends_on",
+			"confidence": 1
+		},
+		{
+			"from": "input-controls",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "input-controls",
+			"to": "keyboard-handler",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "input-controls",
+			"to": "das-arr",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "input-controls",
+			"to": "pause-and-restart",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "game-core",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "game-core",
+			"to": "tetromino-types",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "game-core",
+			"to": "board",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "game-core",
+			"to": "bag-randomizer",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "game-core",
+			"to": "line-clear",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "game-core",
+			"to": "scoring",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "game-core",
+			"to": "gravity",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "canvas-vs-dom-decision",
+			"to": "render-and-motion",
+			"type": "decision_affects",
+			"confidence": 1
+		},
+		{
+			"from": "canvas-vs-dom-decision",
+			"to": "q-canvas-vs-dom",
+			"type": "decision_affects",
+			"confidence": 1
+		},
+		{
+			"from": "build-and-deploy",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "build-and-deploy",
+			"to": "vite-setup",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "build-and-deploy",
+			"to": "main-entry",
+			"type": "decomposes_into",
+			"confidence": 1
+		},
+		{
+			"from": "dom-playfield",
+			"to": "cell-rendering",
+			"type": "blocks",
+			"confidence": 1
+		},
+		{
+			"from": "dom-playfield",
+			"to": "render-and-motion",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "dom-playfield",
+			"to": "render-and-motion",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "decouple-tick-from-tween",
+			"to": "risk-motion-vs-fps",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "decouple-tick-from-tween",
+			"to": "risk-motion-vs-fps",
+			"type": "mitigates",
+			"confidence": 1
+		},
+		{
+			"from": "q-canvas-vs-dom",
+			"to": "goal-root",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "q-canvas-vs-dom",
+			"to": "canvas-vs-dom-decision",
+			"type": "decided_by",
+			"confidence": 1
+		},
+		{
+			"from": "q-canvas-vs-dom",
+			"to": "goal-root",
+			"type": "derived_from",
+			"confidence": 1
+		},
+		{
+			"from": "stress-test-60fps",
+			"to": "risk-motion-vs-fps",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "stress-test-60fps",
+			"to": "risk-motion-vs-fps",
+			"type": "mitigates",
+			"confidence": 1
+		},
+		{
+			"from": "scoring",
+			"to": "game-core",
+			"type": "composed_of",
+			"confidence": 1
+		},
+		{
+			"from": "scoring",
+			"to": "game-core",
+			"type": "derived_from",
+			"confidence": 1
+		}
+	],
+	"decisions": [
+		{
+			"id": "line-clear-blocking-decision",
+			"title": "Line-clear sweep blocks the rule-step",
+			"status": "accepted",
+			"decided_at": "2026-05-07T22:20:11.300Z"
+		},
+		{
+			"id": "canvas-vs-dom-decision",
+			"title": "DOM + motion.dev (not Canvas-2D)",
+			"status": "accepted",
+			"decided_at": "2026-05-07T21:54:19.894Z"
+		}
+	]
+}

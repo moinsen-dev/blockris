@@ -1,0 +1,20 @@
+{
+	"name": "fancy-tetris",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"test": "bun test",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@happy-dom/global-registrator": "^15.10.0",
+		"bun-types": "latest",
+		"happy-dom": "^15.10.0",
+		"typescript": "^5.4.0",
+		"vite": "^8.0.11"
+	}
+}
