@@ -121,6 +121,6 @@ describe("applyCellState (single-cell helper)", () => {
 		applyCellState(cell, "T");
 		// happy-dom preserves the hex value as-set (no rgb() normalisation)
 		expect(cell.style.background).toBe(TETROMINOES.T.color);
-		expect(TETROMINOES.T.color).toBe("#c084fc");
+		expect(TETROMINOES.T.color).toBe("#d946ef");
 	});
 });

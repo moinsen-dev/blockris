@@ -253,17 +253,17 @@ const L_SHAPES: RotationStates = [
 	],
 ];
 
-// Blockris palette — pastel-shifted, distinct from the standard
-// Tetris-guideline saturated primaries. Each piece keeps its
-// canonical letter mapping, but the visual identity is its own.
+// Blockris palette — neon hot, synthwave-bias. Each piece is its
+// own electric saturation point so the canvas + glow shaders read
+// it as a luminous source rather than a flat fill.
 export const TETROMINOES: { readonly [K in TetrominoType]: TetrominoSpec } = {
-	I: { type: "I", shapes: I_SHAPES, color: "#67e8f9", spawnCol: 3, kickGroup: "I" },
-	O: { type: "O", shapes: O_SHAPES, color: "#fcd34d", spawnCol: 3, kickGroup: "O" },
-	T: { type: "T", shapes: T_SHAPES, color: "#c084fc", spawnCol: 3, kickGroup: "JLSTZ" },
-	S: { type: "S", shapes: S_SHAPES, color: "#86efac", spawnCol: 3, kickGroup: "JLSTZ" },
-	Z: { type: "Z", shapes: Z_SHAPES, color: "#fda4af", spawnCol: 3, kickGroup: "JLSTZ" },
-	J: { type: "J", shapes: J_SHAPES, color: "#93c5fd", spawnCol: 3, kickGroup: "JLSTZ" },
-	L: { type: "L", shapes: L_SHAPES, color: "#fdba74", spawnCol: 3, kickGroup: "JLSTZ" },
+	I: { type: "I", shapes: I_SHAPES, color: "#22d3ee", spawnCol: 3, kickGroup: "I" },
+	O: { type: "O", shapes: O_SHAPES, color: "#facc15", spawnCol: 3, kickGroup: "O" },
+	T: { type: "T", shapes: T_SHAPES, color: "#d946ef", spawnCol: 3, kickGroup: "JLSTZ" },
+	S: { type: "S", shapes: S_SHAPES, color: "#22c55e", spawnCol: 3, kickGroup: "JLSTZ" },
+	Z: { type: "Z", shapes: Z_SHAPES, color: "#ec4899", spawnCol: 3, kickGroup: "JLSTZ" },
+	J: { type: "J", shapes: J_SHAPES, color: "#3b82f6", spawnCol: 3, kickGroup: "JLSTZ" },
+	L: { type: "L", shapes: L_SHAPES, color: "#fb923c", spawnCol: 3, kickGroup: "JLSTZ" },
 };
 
 // ---------------------------------------------------------------------------

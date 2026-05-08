@@ -19,7 +19,7 @@ import {
 	linesToNextLevel,
 	newGame,
 } from "./game-core/game-state.ts";
-import { shapeOf } from "./game-core/tetromino-types.ts";
+import { TETROMINOES, shapeOf } from "./game-core/tetromino-types.ts";
 import { createDasArrState, type DasArrState, tickDas } from "./input/das-arr.ts";
 import { handleKey } from "./input/keyboard-handler.ts";
 import { animateLineClear } from "./render/line-clear-sweep.ts";
@@ -38,6 +38,10 @@ import {
 	paintHold,
 	type HoldPreview,
 } from "./render/hold-preview.ts";
+import {
+	createParticleSystem,
+	type ParticleSystem,
+} from "./render/particles.ts";
 import { createTickDriver, type TickDriver } from "./loop/tick-driver.ts";
 
 interface Hud {
@@ -116,10 +120,76 @@ interface Wiring {
 	readonly queue: QueuePreview;
 	readonly hold: HoldPreview;
 	readonly tick: TickDriver;
+	readonly particles: ParticleSystem;
+	readonly canvas: HTMLCanvasElement;
+	readonly ctx: CanvasRenderingContext2D | null;
+	readonly cellPx: number;
 	das: DasArrState;
 	heldKeys: Map<string, true>;
 	state: GameState;
 	prevBoardFilled: number;
+}
+
+const SHAKE_KEYFRAMES: Record<number, string> = {
+	1: "shake-small",
+	2: "shake-medium",
+	3: "shake-medium",
+	4: "shake-large",
+};
+
+const LINE_LABELS: Record<number, string> = {
+	1: "SINGLE",
+	2: "DOUBLE",
+	3: "TRIPLE",
+	4: "TETRIS!",
+};
+
+function triggerShake(shell: HTMLElement, intensityClass: string): void {
+	shell.classList.remove(
+		"shake-small",
+		"shake-medium",
+		"shake-large",
+	);
+	// Force reflow so the same animation can replay.
+	void shell.offsetHeight;
+	shell.classList.add(intensityClass);
+}
+
+function showSplash(parent: HTMLElement, text: string, isTetris: boolean): void {
+	const splash = parent.ownerDocument.createElement("div");
+	splash.classList.add("blockris-splash");
+	if (isTetris) splash.classList.add("is-tetris");
+	splash.textContent = text;
+	parent.appendChild(splash);
+	setTimeout(() => splash.remove(), 950);
+}
+
+function emitLockParticles(w: Wiring, piece: ActivePiece): void {
+	const colour = TETROMINOES[piece.type].color;
+	const cells = activePieceCellCoords(piece);
+	for (const [c, r] of cells) {
+		const x = c * (w.cellPx + 1) + w.cellPx / 2 + 4;
+		const y = r * (w.cellPx + 1) + w.cellPx / 2 + 4;
+		w.particles.emit({ x, y, color: colour, count: 6, intensity: 1 });
+	}
+}
+
+function emitLineClearParticles(w: Wiring, rowIndices: number[]): void {
+	const colour = "#ffffff";
+	for (const row of rowIndices) {
+		for (let col = 0; col < 10; col++) {
+			const x = col * (w.cellPx + 1) + w.cellPx / 2 + 4;
+			const y = row * (w.cellPx + 1) + w.cellPx / 2 + 4;
+			w.particles.emit({
+				x,
+				y,
+				color: colour,
+				count: 5,
+				intensity: 2,
+				lifeMs: 800,
+			});
+		}
+	}
 }
 
 function paint(w: Wiring): void {
@@ -155,15 +225,27 @@ function dispatch(w: Wiring, intent: Intent | null, now: number): void {
 	const after = applyIntent(before, intent, now);
 	w.state = after;
 
-	if (before.active && countFilled(after.board) > w.prevBoardFilled) {
+	const lockHappened =
+		before.active && countFilled(after.board) > w.prevBoardFilled;
+	if (lockHappened && before.active) {
 		const cells = activePieceCellCoords(before.active);
 		animateLockFlash(w.playfield, cells, { durationMs: 200 });
+		emitLockParticles(w, before.active);
+		// Hard-drop carries score bonus → louder shake; soft-drop / gravity
+		// lock → small shake.
+		const wasHardDrop = intent.kind === "hard-drop";
+		triggerShake(w.shell, wasHardDrop ? "shake-medium" : "shake-small");
 	}
 
 	const linesDelta = after.lines - before.lines;
 	if (linesDelta > 0) {
 		const rows = Array.from({ length: linesDelta }, (_, i) => 19 - i);
 		animateLineClear(w.playfield, rows, { durationMs: 250 });
+		emitLineClearParticles(w, rows);
+		const isTetris = linesDelta === 4;
+		triggerShake(w.shell, SHAKE_KEYFRAMES[linesDelta] ?? "shake-small");
+		const label = LINE_LABELS[linesDelta];
+		if (label) showSplash(w.playfield.root, label, isTetris);
 	}
 
 	w.prevBoardFilled = countFilled(after.board);
@@ -228,6 +310,13 @@ function startGameLoop(w: Wiring): () => void {
 			dispatch(w, { kind: "tick" }, now);
 		}
 
+		// Particle physics + paint.
+		w.particles.step(elapsed);
+		if (w.ctx) {
+			w.ctx.clearRect(0, 0, w.canvas.width, w.canvas.height);
+			w.particles.paint(w.ctx);
+		}
+
 		paint(w);
 		requestAnimationFrame(frame);
 	};
@@ -243,6 +332,27 @@ function buildShell(parent: HTMLElement): HTMLElement {
 	shell.classList.add("blockris-shell");
 	parent.appendChild(shell);
 	return shell;
+}
+
+const DEFAULT_CELL_PX = 30;
+
+function mountParticleCanvas(playfieldRoot: HTMLElement): {
+	canvas: HTMLCanvasElement;
+	ctx: CanvasRenderingContext2D | null;
+} {
+	const canvas = playfieldRoot.ownerDocument.createElement("canvas");
+	canvas.classList.add("blockris-particles");
+	// Sized to the playfield (10×30 + grid gaps + padding ≈ 314×624)
+	const px = DEFAULT_CELL_PX;
+	canvas.width = 10 * (px + 1) + 7;
+	canvas.height = 20 * (px + 1) + 7;
+	canvas.style.width = "100%";
+	canvas.style.height = "100%";
+	playfieldRoot.appendChild(canvas);
+	const ctx = canvas.getContext
+		? (canvas.getContext("2d") as CanvasRenderingContext2D | null)
+		: null;
+	return { canvas, ctx };
 }
 
 export function bootstrap(parent: HTMLElement, seed?: number): () => void {
@@ -261,6 +371,8 @@ export function bootstrap(parent: HTMLElement, seed?: number): () => void {
 	shell.style.gridTemplateAreas = '"hud hud hud" "hold board queue"';
 	shell.style.gridTemplateRows = "auto auto";
 
+	const { canvas, ctx } = mountParticleCanvas(playfield.root);
+
 	const state = newGame({ seed });
 	const w: Wiring = {
 		shell,
@@ -269,6 +381,10 @@ export function bootstrap(parent: HTMLElement, seed?: number): () => void {
 		queue,
 		hold,
 		tick: createTickDriver({ msPerTick: msPerCell(state.level) }),
+		particles: createParticleSystem(600),
+		canvas,
+		ctx,
+		cellPx: DEFAULT_CELL_PX,
 		das: createDasArrState(),
 		heldKeys: new Map(),
 		state,

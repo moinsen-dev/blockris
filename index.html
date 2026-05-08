@@ -6,13 +6,15 @@
 		<title>Blockris</title>
 		<style>
 			:root {
-				--bg: #0b1020;
-				--bg-grid: #1a2240;
-				--bg-cell-empty: #0f172a;
-				--fg: #e2e8f0;
-				--fg-dim: #94a3b8;
-				--accent: #38bdf8;
-				--frame: #1e293b;
+				--bg-deep: #0b0028;
+				--bg-mid: #2d0a4e;
+				--bg-low: #ff006e;
+				--neon-magenta: #ff00ff;
+				--neon-cyan: #00ffff;
+				--neon-yellow: #fde047;
+				--fg: #fde7ff;
+				--fg-dim: #a78bfa;
+				--frame: #1a0a3a;
 				--cell-px: 30px;
 				--mini-cell-px: 18px;
 			}
@@ -25,19 +27,97 @@
 			body {
 				margin: 0;
 				padding: 0;
-				background: radial-gradient(
-						ellipse at top,
-						rgba(56, 189, 248, 0.08),
-						transparent 60%
-					),
-					var(--bg);
+				overflow: hidden;
 				color: var(--fg);
 				font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
 				min-height: 100vh;
 				-webkit-font-smoothing: antialiased;
 			}
 
+			/* Synthwave layered background — sky → sun → grid floor */
+			body {
+				background:
+					radial-gradient(
+						ellipse 80% 60% at 50% 75%,
+						rgba(255, 0, 255, 0.25),
+						transparent 70%
+					),
+					radial-gradient(
+						circle 200px at 50% 60%,
+						#ff8a3d,
+						#ff006e 60%,
+						transparent 80%
+					),
+					linear-gradient(
+						to bottom,
+						var(--bg-deep) 0%,
+						var(--bg-mid) 40%,
+						#5b0466 60%,
+						#1a0040 100%
+					);
+				background-attachment: fixed;
+			}
+
+			/* Perspective grid floor — gives the synthwave horizon */
+			.synthwave-floor {
+				position: fixed;
+				inset: 60% 0 0 0;
+				perspective: 600px;
+				perspective-origin: 50% 0%;
+				pointer-events: none;
+				z-index: 0;
+			}
+			.synthwave-floor::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background:
+					repeating-linear-gradient(
+						0deg,
+						transparent 0,
+						transparent 39px,
+						rgba(255, 0, 255, 0.6) 40px
+					),
+					repeating-linear-gradient(
+						90deg,
+						transparent 0,
+						transparent 39px,
+						rgba(255, 0, 255, 0.6) 40px
+					),
+					linear-gradient(to bottom, transparent, rgba(157, 23, 188, 0.4));
+				transform: rotateX(60deg);
+				transform-origin: top;
+				animation: synthwave-grid-scroll 1.4s linear infinite;
+			}
+			@keyframes synthwave-grid-scroll {
+				from {
+					background-position-y: 0px, 0px, 0px;
+				}
+				to {
+					background-position-y: 40px, 0px, 0px;
+				}
+			}
+
+			/* Scanlines overlay */
+			body::after {
+				content: "";
+				position: fixed;
+				inset: 0;
+				background: repeating-linear-gradient(
+					0deg,
+					rgba(0, 0, 0, 0.08) 0,
+					rgba(0, 0, 0, 0.08) 1px,
+					transparent 1px,
+					transparent 3px
+				);
+				pointer-events: none;
+				z-index: 100;
+				mix-blend-mode: multiply;
+			}
+
 			#app {
+				position: relative;
+				z-index: 1;
 				display: grid;
 				place-items: center;
 				min-height: 100vh;
@@ -51,12 +131,15 @@
 				gap: 1.5rem;
 				align-items: start;
 				padding: 1.5rem;
-				border-radius: 1rem;
-				background: rgba(15, 23, 42, 0.6);
-				backdrop-filter: blur(8px);
+				border-radius: 0.5rem;
+				background: rgba(10, 0, 30, 0.65);
+				backdrop-filter: blur(10px);
+				border: 1px solid rgba(255, 0, 255, 0.3);
 				box-shadow:
-					0 0 0 1px rgba(148, 163, 184, 0.1),
-					0 30px 60px -15px rgba(0, 0, 0, 0.5);
+					0 0 0 1px rgba(255, 0, 255, 0.2),
+					0 0 40px rgba(255, 0, 255, 0.25),
+					0 30px 60px -15px rgba(0, 0, 0, 0.7);
+				position: relative;
 			}
 
 			.blockris-hud {
@@ -66,7 +149,7 @@
 				gap: 1rem;
 				width: 100%;
 				margin-bottom: 1rem;
-				font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+				font-family: "VT323", ui-monospace, SFMono-Regular, Menlo, monospace;
 			}
 
 			.blockris-hud-stat {
@@ -74,56 +157,66 @@
 				flex-direction: column;
 				gap: 0.125rem;
 				padding: 0.5rem 0.75rem;
-				border-radius: 0.375rem;
-				background: rgba(30, 41, 59, 0.6);
-				border: 1px solid rgba(148, 163, 184, 0.08);
+				border-radius: 0.25rem;
+				background: rgba(50, 0, 80, 0.6);
+				border: 1px solid rgba(255, 0, 255, 0.2);
 			}
 			.blockris-hud-stat-label {
 				font-size: 0.625rem;
-				opacity: 0.6;
+				opacity: 0.8;
 				text-transform: uppercase;
-				letter-spacing: 0.08em;
+				letter-spacing: 0.12em;
+				color: var(--neon-cyan);
+				text-shadow: 0 0 6px var(--neon-cyan);
 			}
 			.blockris-hud-stat-value {
-				font-size: 1.125rem;
-				font-weight: 600;
+				font-size: 1.25rem;
+				font-weight: 700;
 				color: var(--fg);
+				text-shadow:
+					0 0 8px rgba(255, 0, 255, 0.8),
+					0 0 16px rgba(255, 0, 255, 0.4);
 			}
 
 			[data-playfield="true"] {
 				grid-area: board;
-				border-radius: 0.5rem;
+				border-radius: 0.25rem;
 				padding: 4px !important;
 				background: var(--frame) !important;
 				box-shadow:
-					inset 0 0 0 1px rgba(56, 189, 248, 0.15),
-					0 0 24px rgba(56, 189, 248, 0.1);
+					inset 0 0 0 1px rgba(255, 0, 255, 0.4),
+					0 0 30px rgba(255, 0, 255, 0.3),
+					0 0 60px rgba(0, 255, 255, 0.15);
+				position: relative;
 			}
 
 			[data-playfield="true"] > div {
-				background: var(--bg-cell-empty);
-				border-radius: 2px;
-				transition: background 80ms ease-out;
+				background: rgba(15, 5, 30, 0.9);
+				border-radius: 1px;
+				transition: background 60ms ease-out;
 			}
 
 			[data-filled="true"] {
 				box-shadow:
-					inset 2px 2px 0 0 rgba(255, 255, 255, 0.25),
-					inset -2px -2px 0 0 rgba(0, 0, 0, 0.35);
+					inset 2px 2px 0 0 rgba(255, 255, 255, 0.4),
+					inset -2px -2px 0 0 rgba(0, 0, 0, 0.5);
 			}
 
 			.piece-overlay {
 				background: var(--piece-color, #888) !important;
 				box-shadow:
-					inset 2px 2px 0 0 rgba(255, 255, 255, 0.4),
+					inset 2px 2px 0 0 rgba(255, 255, 255, 0.55),
 					inset -2px -2px 0 0 rgba(0, 0, 0, 0.4),
-					0 0 8px var(--piece-color, transparent);
+					0 0 8px var(--piece-color, transparent),
+					0 0 16px var(--piece-color, transparent);
 			}
 
 			[data-ghost="true"] {
 				background: transparent !important;
-				box-shadow: inset 0 0 0 2px var(--piece-color, var(--fg-dim));
-				opacity: 0.55;
+				box-shadow:
+					inset 0 0 0 2px var(--piece-color, var(--fg-dim)),
+					0 0 6px var(--piece-color, transparent);
+				opacity: 0.5;
 			}
 
 			[data-clearing="true"] {
@@ -136,13 +229,13 @@
 					filter: brightness(2);
 				}
 				50% {
-					background: #fef9c3;
-					filter: brightness(1.6);
+					background: var(--neon-cyan);
+					filter: brightness(2.5) drop-shadow(0 0 12px var(--neon-cyan));
 				}
 				100% {
 					background: #fff;
 					transform: scaleY(0.05);
-					filter: brightness(2.5);
+					filter: brightness(3);
 				}
 			}
 
@@ -151,8 +244,9 @@
 			}
 			@keyframes blockris-lock {
 				0% {
-					filter: brightness(2.5);
+					filter: brightness(2.8);
 					background: #fff;
+					box-shadow: 0 0 16px #fff;
 				}
 				100% {
 					filter: brightness(1);
@@ -176,9 +270,10 @@
 				margin: 0 0 0.25rem;
 				font-size: 0.625rem;
 				text-transform: uppercase;
-				letter-spacing: 0.1em;
-				color: var(--fg-dim);
-				opacity: 0.7;
+				letter-spacing: 0.15em;
+				color: var(--neon-magenta);
+				text-shadow: 0 0 8px var(--neon-magenta);
+				opacity: 0.9;
 			}
 
 			.blockris-mini {
@@ -187,30 +282,134 @@
 				grid-template-rows: repeat(4, var(--mini-cell-px));
 				gap: 1px;
 				padding: 4px;
-				background: var(--frame);
+				background: rgba(20, 0, 40, 0.7);
+				border: 1px solid rgba(255, 0, 255, 0.2);
 				border-radius: 4px;
 			}
 			.blockris-mini > div {
-				background: var(--bg-cell-empty);
+				background: rgba(15, 5, 30, 0.9);
 				border-radius: 1px;
 			}
 			.blockris-mini > div[data-mini-filled="true"] {
 				background: var(--mini-color, var(--fg-dim));
-				box-shadow: inset 1px 1px 0 0 rgba(255, 255, 255, 0.3);
+				box-shadow:
+					inset 1px 1px 0 0 rgba(255, 255, 255, 0.4),
+					0 0 6px var(--mini-color, transparent);
 			}
 
 			.blockris-status-running {
-				color: var(--accent);
+				color: var(--neon-cyan);
+				text-shadow: 0 0 10px var(--neon-cyan);
 			}
 			.blockris-status-paused {
-				color: #fbbf24;
+				color: var(--neon-yellow);
+				text-shadow: 0 0 10px var(--neon-yellow);
 			}
 			.blockris-status-game-over {
-				color: #f87171;
+				color: var(--neon-magenta);
+				text-shadow: 0 0 12px var(--neon-magenta);
+				animation: blockris-game-over-flash 600ms ease-in-out infinite alternate;
+			}
+			@keyframes blockris-game-over-flash {
+				from { opacity: 0.6; }
+				to { opacity: 1; }
+			}
+
+			/* Particle canvas — overlays the playfield */
+			.blockris-particles {
+				position: absolute;
+				pointer-events: none;
+				inset: 0;
+				z-index: 5;
+			}
+
+			/* Screen-shake intensities */
+			.shake-small {
+				animation: shake-small 150ms ease-out;
+			}
+			.shake-medium {
+				animation: shake-medium 220ms ease-out;
+			}
+			.shake-large {
+				animation: shake-large 360ms ease-out;
+			}
+			@keyframes shake-small {
+				0%, 100% { transform: translate(0, 0); }
+				25% { transform: translate(-2px, 1px); }
+				50% { transform: translate(2px, -1px); }
+				75% { transform: translate(-1px, 2px); }
+			}
+			@keyframes shake-medium {
+				0%, 100% { transform: translate(0, 0); }
+				15% { transform: translate(-4px, 2px); }
+				30% { transform: translate(4px, -3px); }
+				45% { transform: translate(-3px, 4px); }
+				60% { transform: translate(3px, -2px); }
+				75% { transform: translate(-2px, 3px); }
+				90% { transform: translate(2px, -1px); }
+			}
+			@keyframes shake-large {
+				0%, 100% { transform: translate(0, 0); }
+				10% { transform: translate(-7px, 3px) rotate(-0.4deg); }
+				20% { transform: translate(7px, -4px) rotate(0.4deg); }
+				35% { transform: translate(-5px, 5px) rotate(-0.2deg); }
+				50% { transform: translate(6px, -3px) rotate(0.3deg); }
+				65% { transform: translate(-4px, 4px) rotate(-0.2deg); }
+				80% { transform: translate(3px, -2px) rotate(0.1deg); }
+			}
+
+			/* Splash text overlay (TETRIS!, COMBO!, T-SPIN!) */
+			.blockris-splash {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				font-family: ui-monospace, SFMono-Regular, monospace;
+				font-size: 3rem;
+				font-weight: 900;
+				letter-spacing: 0.05em;
+				text-transform: uppercase;
+				pointer-events: none;
+				z-index: 10;
+				white-space: nowrap;
+				color: var(--neon-yellow);
+				text-shadow:
+					0 0 20px var(--neon-yellow),
+					0 0 40px var(--neon-magenta),
+					0 0 60px var(--neon-magenta);
+				opacity: 0;
+				animation: blockris-splash 900ms ease-out forwards;
+			}
+			.blockris-splash.is-tetris {
+				color: var(--neon-magenta);
+				text-shadow:
+					0 0 20px var(--neon-magenta),
+					0 0 40px var(--neon-cyan),
+					0 0 80px var(--neon-cyan);
+				font-size: 4rem;
+			}
+			@keyframes blockris-splash {
+				0% {
+					opacity: 0;
+					transform: translate(-50%, -50%) scale(0.5);
+				}
+				20% {
+					opacity: 1;
+					transform: translate(-50%, -50%) scale(1.15);
+				}
+				50% {
+					opacity: 1;
+					transform: translate(-50%, -50%) scale(1);
+				}
+				100% {
+					opacity: 0;
+					transform: translate(-50%, -90%) scale(0.95);
+				}
 			}
 		</style>
 	</head>
 	<body>
+		<div class="synthwave-floor"></div>
 		<div id="app"></div>
 		<script type="module" src="/src/main.ts"></script>
 	</body>
